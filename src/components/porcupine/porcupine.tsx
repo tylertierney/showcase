@@ -4,37 +4,27 @@ import {
   type MouseEventHandler,
   type SVGAttributes,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 
-// const sunriseGradient = [
-//   "#003f5b",
-//   "#2b4b7d",
-//   "#5f5195",
-//   "#98509d",
-//   "#cc4c91",
-//   "#f25375",
-//   "#ff6f4e",
-//   "#ff8513",
-// ];
-
-const sunriseStemGradient = ['#ff667d', '#d04ee4', '#513aad', '#513aad69']
-const sunriseGradient = ['#ab96ff', '#ff96c4', '#ffc74f', '#ffe4aa', '#ffefcb']
+const fallbackStemGradient = ['var(--foreground)']
 
 type Coords = {
   x: number
   y: number
 }
 
-const getRandomSemicirclePoints = (
+const getRandomPointInCircle = (
   radius: number,
-  centerX: number,
-  centerY: number,
+  cx: number,
+  cy: number,
 ): Coords => {
-  const theta = Math.PI + Math.random() * Math.PI
-  const r = Math.sqrt(Math.random()) * radius
-  const x = centerX + r * Math.cos(theta)
-  const y = centerY + r * Math.sin(theta)
+  const angle = Math.random() * 2 * Math.PI
+  const r = Math.sqrt(Math.random()) * 0.9 * radius
+
+  const x = cx + r * Math.cos(angle)
+  const y = cy + r * Math.sin(angle)
   return { x, y }
 }
 
@@ -43,21 +33,58 @@ type Node = Coords & {
   style?: CSSProperties
 }
 
-const WIDTH = 800
-const HEIGHT = 500
+type PorcupineProps = {
+  numberOfNodes?: number
+  /**
+   * @default 600
+   */
+  viewBoxWidth?: number
+  /**
+   * @default 600
+   */
+  viewBoxHeight?: number
+  stemGradient?: string[]
+  backgroundGradient?: string[]
+}
 
-const initialNodes: Node[] = Array(300)
-  .fill(null)
-  .map(() => {
-    const { x, y } = getRandomSemicirclePoints(HEIGHT / 1.4, WIDTH / 2, HEIGHT)
-    return {
-      x,
-      y,
-      seed: Math.random() * 1000,
-    }
-  })
+const HEIGHT = 600
+const WIDTH = 600
 
-export default function Porcupine(props: SVGAttributes<SVGSVGElement>) {
+const getInitialNodes = (
+  numberOfNodes: number,
+  width: number,
+  height: number,
+) => {
+  return Array(numberOfNodes)
+    .fill(null)
+    .map(() => {
+      // const { x, y } = getRandomSemicirclePoints(HEIGHT / 1.4, WIDTH / 2, HEIGHT)
+      const { x, y } = getRandomPointInCircle(width / 2, width / 2, height / 2)
+      // const x = Math.random() * WIDTH
+      // const y = Math.random() * HEIGHT
+      return {
+        x,
+        y,
+        seed: Math.random() * 1000,
+      }
+    })
+}
+
+export default function Porcupine({
+  numberOfNodes = 500,
+  viewBoxWidth = 600,
+  viewBoxHeight = 600,
+  stemGradient = [],
+  backgroundGradient = [],
+  ...rest
+}: PorcupineProps & SVGAttributes<SVGSVGElement>) {
+  const initialNodes: Node[] = useMemo(
+    () => getInitialNodes(numberOfNodes, 600, 600),
+    [numberOfNodes],
+  )
+
+  // const initialNodes: Node[] = getInitialNodes(numberOfNodes, 600, 600)
+
   const [time, setTime] = useState(0)
 
   useEffect(() => {
@@ -82,8 +109,8 @@ export default function Porcupine(props: SVGAttributes<SVGSVGElement>) {
     const xPixelValue = e.clientX - left
     const yPixelValue = e.clientY - top
 
-    const x = (xPixelValue / width) * WIDTH
-    const y = (yPixelValue / height) * HEIGHT
+    const x = (xPixelValue / width) * viewBoxWidth
+    const y = (yPixelValue / height) * viewBoxHeight
 
     setCoords({ x, y })
   }) as MouseEventHandler<SVGSVGElement>
@@ -127,79 +154,79 @@ export default function Porcupine(props: SVGAttributes<SVGSVGElement>) {
     return { x: finalX, y: finalY, seed }
   })
 
+  const _stemGradient = stemGradient.length
+    ? stemGradient
+    : fallbackStemGradient
+
   return (
-    <div className="App">
-      <svg
-        className="svg sunrise"
-        onMouseMove={onMouseMove}
-        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        style={{
-          width: WIDTH + 'px',
-          height: HEIGHT + 'px',
-        }}
-        {...props}
-      >
-        <defs>
-          <linearGradient
-            className=""
-            id="sunrise-gradient"
-            gradientUnits="userSpaceOnUse"
-            x1={0}
-            y1={'50%'}
-            x2={0}
-            y2={'100%'}
-          >
-            {sunriseStemGradient.map((color, key) => (
+    <svg
+      className="svg"
+      onMouseMove={onMouseMove}
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      {...rest}
+    >
+      <defs>
+        <radialGradient
+          className=""
+          id="stem-gradient"
+          gradientUnits="userSpaceOnUse"
+          x1={0}
+          y1={'50%'}
+          x2={0}
+          y2={'100%'}
+        >
+          {_stemGradient.map((color, key) => (
+            <stop
+              key={`${color}-${key}`}
+              offset={(1 / _stemGradient.length) * key}
+              style={{ stopColor: color }}
+            />
+          ))}
+        </radialGradient>
+        {backgroundGradient.length && (
+          <radialGradient id="background-gradient">
+            {backgroundGradient.map((color, key) => (
               <stop
-                key={key}
-                offset={(1 / sunriseStemGradient.length) * key}
-                style={{ stopColor: color }}
-              />
-            ))}
-          </linearGradient>
-          <radialGradient id="sunrise-radial-gradient">
-            {sunriseGradient.map((color, key) => (
-              <stop
-                key={key}
-                offset={(1 / sunriseGradient.length) * key}
+                key={`${color}-${key}`}
+                offset={(1 / backgroundGradient.length) * key}
                 style={{ stopColor: color }}
               />
             ))}
             <stop offset={1} style={{ stopColor: 'var(--background)' }} />
           </radialGradient>
-        </defs>
-        <rect
-          x={0}
-          y={0}
-          height={HEIGHT * 2}
-          width={WIDTH}
-          fill="url(#sunrise-radial-gradient)"
-          style={{ opacity: 0.75 }}
-        />
-        {nodes.map(({ x, y, style = {} }, key) => (
-          <g key={key}>
-            <circle
-              cx={x}
-              cy={y}
-              r={1.9}
-              style={{ fill: 'url(#sunrise-gradient)', ...style }}
-            />
-            <line
-              key={key}
-              x1={x}
-              y1={y}
-              x2={WIDTH / 2}
-              y2={HEIGHT}
-              style={{
-                stroke: 'url(#sunrise-gradient)',
-                opacity: 1,
-                strokeLinecap: 'round',
-                strokeWidth: 0.5,
-              }}
-            ></line>
-          </g>
-        ))}
-      </svg>
-    </div>
+        )}
+      </defs>
+      <rect
+        x={0}
+        y={0}
+        height={HEIGHT}
+        width={WIDTH}
+        fill="url(#background-gradient)"
+        style={{ opacity: 0.75 }}
+      />
+      {nodes.map(({ x, y, style = {} }, key) => (
+        <g key={key}>
+          <circle
+            cx={x}
+            cy={y}
+            r={1.9}
+            style={{ fill: 'url(#stem-gradient)', ...style }}
+          />
+          <line
+            key={key}
+            x1={x}
+            y1={y}
+            x2={WIDTH / 2}
+            y2={HEIGHT / 2}
+            style={{
+              stroke: 'url(#stem-gradient)',
+              opacity: 1,
+              strokeLinecap: 'round',
+              strokeWidth: 0.5,
+            }}
+          ></line>
+        </g>
+      ))}
+    </svg>
   )
 }
