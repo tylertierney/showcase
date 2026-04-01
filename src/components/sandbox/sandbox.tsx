@@ -1,84 +1,35 @@
 /* eslint-disable react-hooks/purity */
 
-import { useEffect, useReducer, useRef, useState, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import { Button } from '../ui/button'
-
-type Coords = {
-  x: number
-  y: number
-}
-
-class Box {
-  id: string
-  x: number
-  y: number
-  width: number
-  height: number
-  constructor(box: Coords & { width: number; height: number; id?: string }) {
-    this.id = box.id ? box.id : String(~~(Math.random() * 1_000_000_000))
-    this.x = box.x
-    this.y = box.y
-    this.width = box.width
-    this.height = box.height
-  }
-
-  get cx() {
-    return this.x + this.width / 2
-  }
-
-  get cy() {
-    return this.y + this.height / 2
-  }
-
-  get center() {
-    return {
-      x: this.cx,
-      y: this.cy,
-    }
-  }
-
-  get top() {
-    return {
-      x: this.x + this.width / 2,
-      y: this.y,
-    }
-  }
-
-  get right() {
-    return {
-      x: this.x + this.width,
-      y: this.y + this.height / 2,
-    }
-  }
-
-  get bottom() {
-    return {
-      x: this.x + this.width / 2,
-      y: this.y + this.height,
-    }
-  }
-
-  get left() {
-    return {
-      x: this.x,
-      y: this.y + this.height / 2,
-    }
-  }
-}
+import {
+  type Coords,
+  type Line,
+  Box,
+  convertLinesToPath,
+  distance,
+} from './utils'
 
 type CoordsWithOffset = Coords & { offsetX: number; offsetY: number }
 
-const getLines = (
-  source: Box,
-  target: Box,
-  offset?: number,
-): Array<{ x1: number; y1: number; x2: number; y2: number }> => {
-  const _offset = offset || 20
+type LinesConfig = {
+  source: Box
+  target: Box
+  offset?: number
+  diagonal?: boolean
+}
+
+const getLines = ({
+  source,
+  target,
+  offset = 20,
+  diagonal = false,
+}: LinesConfig): Line[] => {
   const offsets: { offsetX: number; offsetY: number }[] = [
-    { offsetX: 0, offsetY: -1 * _offset },
-    { offsetX: _offset, offsetY: 0 },
-    { offsetX: 0, offsetY: _offset },
-    { offsetX: -1 * _offset, offsetY: 0 },
+    { offsetX: 0, offsetY: -1 * offset },
+    { offsetX: offset, offsetY: 0 },
+    { offsetX: 0, offsetY: offset },
+    { offsetX: -1 * offset, offsetY: 0 },
   ]
 
   const points: CoordsWithOffset[] = [
@@ -113,7 +64,7 @@ const getLines = (
 
   for (const p1 of points) {
     for (const p2 of targetPoints) {
-      const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y)
+      const dist = distance({ x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y })
       if (dist < minDist) {
         minDist = dist
         closestPair = [p1, p2]
@@ -121,63 +72,66 @@ const getLines = (
     }
   }
 
-  if (minDist < 3 * _offset) {
+  const [sourcePt, targetPt] = closestPair
+
+  if (minDist < 4 * offset) {
     return [
       {
-        x1: closestPair[0].x,
-        y1: closestPair[0].y,
-        x2: closestPair[1].x,
-        y2: closestPair[1].y,
+        x1: sourcePt.x,
+        y1: sourcePt.y,
+        x2: targetPt.x,
+        y2: targetPt.y,
       },
     ]
   }
 
-  // with diagonals
-  // return [
-  //   {
-  //     x1: closestPair[0].x,
-  //     y1: closestPair[0].y,
-  //     x2: closestPair[0].offsetX,
-  //     y2: closestPair[0].offsetY,
-  //   },
-  //   {
-  //     x1: closestPair[0].offsetX,
-  //     y1: closestPair[0].offsetY,
-  //     x2: closestPair[1].offsetX,
-  //     y2: closestPair[1].offsetY,
-  //   },
-  //   {
-  //     x1: closestPair[1].offsetX,
-  //     y1: closestPair[1].offsetY,
-  //     x2: closestPair[1].x,
-  //     y2: closestPair[1].y,
-  //   },
-  // ]
+  if (diagonal) {
+    return [
+      {
+        x1: sourcePt.x,
+        y1: sourcePt.y,
+        x2: sourcePt.offsetX,
+        y2: sourcePt.offsetY,
+      },
+      {
+        x1: sourcePt.offsetX,
+        y1: sourcePt.offsetY,
+        x2: targetPt.offsetX,
+        y2: targetPt.offsetY,
+      },
+      {
+        x1: targetPt.offsetX,
+        y1: targetPt.offsetY,
+        x2: targetPt.x,
+        y2: targetPt.y,
+      },
+    ]
+  }
 
   return [
     {
-      x1: closestPair[0].x,
-      y1: closestPair[0].y,
-      x2: closestPair[0].offsetX,
-      y2: closestPair[0].offsetY,
+      x1: sourcePt.x,
+      y1: sourcePt.y,
+      x2: sourcePt.offsetX,
+      y2: sourcePt.offsetY,
     },
     {
-      x1: closestPair[0].offsetX,
-      y1: closestPair[0].offsetY,
-      x2: closestPair[1].offsetX,
-      y2: closestPair[0].offsetY,
+      x1: sourcePt.offsetX,
+      y1: sourcePt.offsetY,
+      x2: targetPt.offsetX,
+      y2: sourcePt.offsetY,
     },
     {
-      x1: closestPair[1].offsetX,
-      y1: closestPair[0].offsetY,
-      x2: closestPair[1].offsetX,
-      y2: closestPair[1].offsetY,
+      x1: targetPt.offsetX,
+      y1: sourcePt.offsetY,
+      x2: targetPt.offsetX,
+      y2: targetPt.offsetY,
     },
     {
-      x1: closestPair[1].offsetX,
-      y1: closestPair[1].offsetY,
-      x2: closestPair[1].x,
-      y2: closestPair[1].y,
+      x1: targetPt.offsetX,
+      y1: targetPt.offsetY,
+      x2: targetPt.x,
+      y2: targetPt.y,
     },
   ]
 }
@@ -213,9 +167,9 @@ export const Sandbox = () => {
   useEffect(() => {
     const cb = () => setDrag(null)
 
-    window.addEventListener('mouseup', cb)
+    window.addEventListener('pointerup', cb)
 
-    return () => window.removeEventListener('mouseup', cb)
+    return () => window.removeEventListener('pointerup', cb)
   }, [])
 
   const onMouseDown = (e: MouseEvent, box: Box) => {
@@ -261,36 +215,32 @@ export const Sandbox = () => {
       <Button onClick={() => setBoxes(getBoxes())}>reset</Button>
       <svg
         onMouseMove={onMouseMove}
+        onPointerMove={onMouseMove}
         ref={svgRef}
         viewBox="0 0 500 500"
-        style={{ border: 'solid red 1px', width: '500px' }}
+        style={{ border: 'solid red 1px', width: '500px', touchAction: 'none' }}
       >
         {boxes.slice(1).map((box, idx) => {
           const prev = boxes[idx]
 
-          const lines = getLines(box, prev)
+          const lines = getLines({ source: box, target: prev })
 
-          return lines.map(({ x1, y1, x2, y2 }, key) => (
-            <line
-              key={key}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+          return (
+            <path
+              d={convertLinesToPath(lines, 5)}
+              fill="none"
+              strokeWidth={1}
               stroke="black"
-              strokeWidth={2}
-              strokeLinecap="round"
             />
-          ))
+          )
         })}
         {boxes.map((box, key) => {
-          // const { x, y, width, height } = box
-
           return (
             <g
               key={key}
               style={{ cursor: drag ? 'grabbing' : 'grab' }}
               onMouseDown={(e) => onMouseDown(e, box)}
+              onPointerDown={(e) => onMouseDown(e, box)}
             >
               <rect
                 x={box.x}
@@ -298,12 +248,8 @@ export const Sandbox = () => {
                 width={box.width}
                 height={box.height}
                 fill="lightblue"
+                rx={6}
               ></rect>
-              {/* {[box.center, box.top, box.right, box.bottom, box.left].map(
-                ({ x, y }, key) => {
-                  return <circle key={key} cx={x} cy={y} r={5} fill="red" />
-                },
-              )} */}
             </g>
           )
         })}
