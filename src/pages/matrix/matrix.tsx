@@ -13,9 +13,10 @@ export const MatrixPage = () => {
           eiusmod
         </p>
       </MatrixText>
-      <FieldSet className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <FieldSet className="min-w-sm absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background/20 backdrop-blur-md">
         <FieldTitle>Color</FieldTitle>
         <ColorPicker
+          className="self-start min-w-12"
           value={color}
           onChange={(val) =>
             setColor(typeof val === 'string' ? val : 'var(--color-purple-600)')

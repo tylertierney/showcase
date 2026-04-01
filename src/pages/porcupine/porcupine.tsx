@@ -40,8 +40,8 @@ export const PorcupinePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col pt-12 px-8 items-center">
-      <div className="flex flex-wrap gap-6 mb-12">
-        <FieldGroup className="max-w-sm border p-6 rounded-md shadow-sm">
+      <div className="flex flex-wrap gap-6 mb-12 justify-center">
+        <FieldSet className="max-w-sm">
           <Field orientation="horizontal">
             <FieldContent>
               <FieldLabel htmlFor="only-show-half-size">
@@ -79,8 +79,8 @@ export const PorcupinePage = () => {
               onCheckedChange={(val) => setHover(val)}
             />
           </Field>
-        </FieldGroup>
-        <FieldSet className="max-w-sm border p-6 rounded-md shadow-sm">
+        </FieldSet>
+        <FieldSet>
           <FieldTitle>Background Gradient</FieldTitle>
           <FieldDescription>
             Supply an array of colors to use as the background gradient.
@@ -104,7 +104,7 @@ export const PorcupinePage = () => {
           </RadioGroup>
         </FieldSet>
 
-        <FieldSet className="max-w-sm border p-6 rounded-md shadow-sm">
+        <FieldSet>
           <FieldTitle>Stem Gradient</FieldTitle>
           <FieldDescription>
             Supply an array of colors to use as the stem gradient.

@@ -12,7 +12,7 @@ const HomeSection = ({
   description,
   link,
   children,
-  className,
+  className = '',
   ...rest
 }: PropsWithChildren<
   {

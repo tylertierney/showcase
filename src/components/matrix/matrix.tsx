@@ -1,4 +1,5 @@
 import {
+  useMemo,
   type CSSProperties,
   type HTMLAttributes,
   type PropsWithChildren,
@@ -73,23 +74,33 @@ export const MatrixText = ({
   style = {},
   ...rest
 }: PropsWithChildren<Props>) => {
-  const arr = wordFormatter
-    ? Array(columnCount)
-        .fill(null)
-        .map(() => wordFormatter(word))
-    : Array(columnCount)
-        .fill(null)
-        .map(() => randomizeCaps(`${shuffleWord(word)}${shuffleWord(word)}`))
-        .map((str) => addSpaces(str))
+  const arrWithRandomProperties = useMemo(() => {
+    const arr = wordFormatter
+      ? Array(columnCount)
+          .fill(null)
+          .map(() => wordFormatter(word))
+      : Array(columnCount)
+          .fill(null)
+          .map(() => randomizeCaps(`${shuffleWord(word)}${shuffleWord(word)}`))
+          .map((str) => addSpaces(str))
+
+    return arr.map((str) => ({
+      str,
+      // eslint-disable-next-line react-hooks/purity
+      top: ~~(Math.random() * 100) - 100 + '%',
+      // eslint-disable-next-line react-hooks/purity
+      animationDuration: ~~(Math.random() * 10) + 40 + 's',
+    }))
+  }, [word, wordFormatter, columnCount])
 
   return (
     <div style={{ display: 'flex', position: 'relative', ...style }} {...rest}>
-      {arr.map((str, idx) => (
+      {arrWithRandomProperties.map(({ str, top, animationDuration }, idx) => (
         <div key={idx} className={styles.matrixTextContainer}>
           <span
             style={{
-              top: ~~(Math.random() * 100) - 100 + '%',
-              animationDuration: ~~(Math.random() * 10) + 40 + 's',
+              top,
+              animationDuration,
               backgroundImage: `linear-gradient(to bottom, transparent, color-mix(in hsl, ${color} 50%, transparent), ${color})`,
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
@@ -98,11 +109,6 @@ export const MatrixText = ({
             }}
             className={styles.gradientText}
           >
-            {/* {str.split("").map((char, idx) => (
-              <span key={idx} style={{ transform: "translateY(-100vh)" }}>
-                {char}
-              </span>
-            ))} */}
             {str.split('').map((char, idx) => (
               <span key={idx}>{char}</span>
             ))}
