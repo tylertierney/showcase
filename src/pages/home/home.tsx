@@ -98,6 +98,12 @@ export const Home = () => {
           className="overflow-hidden h-160"
         />
       </HomeSection>
+      <HomeSection
+        title="SANDBOX"
+        headline="Create"
+        description={[`I don't really know what goes here.`]}
+        link="/sandbox"
+      ></HomeSection>
     </div>
   )
 }

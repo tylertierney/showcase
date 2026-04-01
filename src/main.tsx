@@ -7,6 +7,7 @@ import { Home } from './pages/home/home.tsx'
 import { ParabolaPage } from './pages/parabola/parabola.tsx'
 import { PorcupinePage } from './pages/porcupine/porcupine.tsx'
 import { MatrixPage } from './pages/matrix/matrix.tsx'
+import { Sandbox } from './components/sandbox/sandbox.tsx'
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: 'matrix',
         element: <MatrixPage />,
+      },
+      {
+        path: 'sandbox',
+        element: <Sandbox />,
       },
     ],
   },

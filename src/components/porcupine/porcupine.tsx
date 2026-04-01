@@ -30,7 +30,9 @@ const getRandomPointInCircle = (
 
 type Node = Coords & {
   seed: number
-  style?: CSSProperties
+  stemStyle?: CSSProperties
+  nodeStyle?: CSSProperties
+  size?: number
 }
 
 type PorcupineProps = {
@@ -60,10 +62,7 @@ const getInitialNodes = (
   return Array(numberOfNodes)
     .fill(null)
     .map(() => {
-      // const { x, y } = getRandomSemicirclePoints(HEIGHT / 1.4, WIDTH / 2, HEIGHT)
       const { x, y } = getRandomPointInCircle(width / 2, width / 2, height / 2)
-      // const x = Math.random() * WIDTH
-      // const y = Math.random() * HEIGHT
       return {
         x,
         y,
@@ -86,8 +85,6 @@ export default function Porcupine({
     () => getInitialNodes(numberOfNodes, 600, 600),
     [numberOfNodes],
   )
-
-  // const initialNodes: Node[] = getInitialNodes(numberOfNodes, 600, 600)
 
   const [time, setTime] = useState(0)
 
@@ -123,14 +120,32 @@ export default function Porcupine({
     setCoords({ x, y })
   }) as MouseEventHandler<SVGSVGElement>
 
-  const nodes: Node[] = initialNodes.map(({ x, y, seed }) => {
+  const nodes: Node[] = initialNodes.map(({ x, y, seed }, i) => {
     const mouseX = coords.x
     const mouseY = coords.y
 
+    const cos = Math.cos(time + seed)
+    const sin = Math.sin(time + seed)
+
     // Drift
     const driftRadius = 15
-    const driftX = Math.cos(time + seed) * driftRadius
-    const driftY = Math.sin(time + seed) * driftRadius
+    const driftX = cos * driftRadius
+    const driftY = sin * driftRadius
+
+    //////
+    let opacity = 1
+    let size = 2
+
+    if (cos >= 0.6) {
+      const diff = cos - 0.7
+      const perc = diff / 0.3
+      opacity = 1 - perc
+    }
+
+    if (sin > 0) {
+      size = sin + 2
+    }
+    //////
 
     let finalX: number = x + driftX
     let finalY: number = y + driftY
@@ -156,10 +171,22 @@ export default function Porcupine({
       finalX += nx * force * pushStrength
       finalY += ny * force * pushStrength
 
-      return { x: finalX, y: finalY, seed }
+      return {
+        x: finalX,
+        y: finalY,
+        seed,
+        stemStyle: { opacity },
+        size,
+      } satisfies Node
     }
 
-    return { x: finalX, y: finalY, seed }
+    return {
+      x: finalX,
+      y: finalY,
+      seed,
+      stemStyle: { opacity },
+      size,
+    } satisfies Node
   })
 
   const _stemGradient = stemGradient.length
@@ -217,13 +244,17 @@ export default function Porcupine({
           style={{ opacity: 0.75 }}
         />
       )}
-      {nodes.map(({ x, y, style = {} }, key) => (
+      {nodes.map(({ x, y, stemStyle = {}, nodeStyle = {}, size }, key) => (
         <g key={key}>
           <circle
             cx={x}
             cy={y}
-            r={1.9}
-            style={{ fill: 'url(#stem-gradient)', ...style }}
+            r={size}
+            style={{
+              fill: 'url(#stem-gradient)',
+              opacity: stemStyle.opacity,
+              ...nodeStyle,
+            }}
           />
           <line
             key={key}
@@ -236,6 +267,7 @@ export default function Porcupine({
               opacity: 1,
               strokeLinecap: 'round',
               strokeWidth: 0.5,
+              ...stemStyle,
             }}
           ></line>
         </g>
