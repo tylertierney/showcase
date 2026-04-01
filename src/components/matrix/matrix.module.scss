@@ -1,0 +1,50 @@
+.matrixTextContainer {
+  height: 100%;
+  position: relative;
+  min-width: 2rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  align-items: center;
+  color: transparent;
+  user-select: none;
+}
+
+.gradientText {
+  font-size: 1.2em;
+  font-family: monospace;
+  position: absolute;
+  top: 0;
+  white-space-collapse: break-spaces;
+  color: inherit;
+
+  animation-name: slide-down;
+  animation-duration: 6s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  background-size: 100% 100%;
+}
+
+@keyframes slide-down {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+    top: 100%;
+  }
+}

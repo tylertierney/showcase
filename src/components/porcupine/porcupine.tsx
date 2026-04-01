@@ -45,6 +45,8 @@ type PorcupineProps = {
   viewBoxHeight?: number
   stemGradient?: string[]
   backgroundGradient?: string[]
+  animated?: boolean
+  hover?: boolean
 }
 
 const HEIGHT = 600
@@ -76,6 +78,8 @@ export default function Porcupine({
   viewBoxHeight = 600,
   stemGradient = [],
   backgroundGradient = [],
+  animated = true,
+  hover = true,
   ...rest
 }: PorcupineProps & SVGAttributes<SVGSVGElement>) {
   const initialNodes: Node[] = useMemo(
@@ -88,6 +92,8 @@ export default function Porcupine({
   const [time, setTime] = useState(0)
 
   useEffect(() => {
+    if (!animated) return
+
     let raf: number
 
     const tick = () => {
@@ -98,11 +104,13 @@ export default function Porcupine({
     raf = requestAnimationFrame(tick)
 
     return () => cancelAnimationFrame(raf)
-  }, [])
+  }, [animated])
 
   const [coords, setCoords] = useState<Coords>({ x: 0, y: 0 })
 
   const onMouseMove = ((e: MouseEvent<SVGSVGElement>) => {
+    if (!hover) return
+
     const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect()
     const { top, left, width, height } = rect
 
@@ -161,7 +169,7 @@ export default function Porcupine({
   return (
     <svg
       className="svg"
-      onMouseMove={onMouseMove}
+      onPointerMove={onMouseMove}
       viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
       {...rest}
     >
@@ -170,10 +178,13 @@ export default function Porcupine({
           className=""
           id="stem-gradient"
           gradientUnits="userSpaceOnUse"
-          x1={0}
-          y1={'50%'}
-          x2={0}
-          y2={'100%'}
+          // x1={0}
+          // y1={'50%'}
+          // x2={0}
+          // y2={'100%'}
+
+          cx={WIDTH / 2}
+          cy={HEIGHT / 2}
         >
           {_stemGradient.map((color, key) => (
             <stop
@@ -196,14 +207,16 @@ export default function Porcupine({
           </radialGradient>
         )}
       </defs>
-      <rect
-        x={0}
-        y={0}
-        height={HEIGHT}
-        width={WIDTH}
-        fill="url(#background-gradient)"
-        style={{ opacity: 0.75 }}
-      />
+      {backgroundGradient.length && (
+        <rect
+          x={0}
+          y={0}
+          height={HEIGHT}
+          width={WIDTH}
+          fill="url(#background-gradient)"
+          style={{ opacity: 0.75 }}
+        />
+      )}
       {nodes.map(({ x, y, style = {} }, key) => (
         <g key={key}>
           <circle

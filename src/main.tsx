@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Home } from './pages/home/home.tsx'
 import { ParabolaPage } from './pages/parabola/parabola.tsx'
 import { PorcupinePage } from './pages/porcupine/porcupine.tsx'
+import { MatrixPage } from './pages/matrix/matrix.tsx'
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: 'porcupine',
         element: <PorcupinePage />,
+      },
+      {
+        path: 'matrix',
+        element: <MatrixPage />,
       },
     ],
   },

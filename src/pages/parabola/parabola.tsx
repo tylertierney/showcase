@@ -4,6 +4,7 @@ import Parabola, {
   type ParabolaProps,
 } from '../../components/parabola/parabola'
 import { Button } from '../../components/ui/button'
+import { toast } from 'sonner'
 
 const defaultArgs: ParabolaArgs = {
   minX: -100,
@@ -129,29 +130,13 @@ export const ParabolaPage = () => {
     if (!curr) return
 
     const html = curr.outerHTML
-    console.log(html)
 
     navigator.clipboard.writeText(html)
   }
 
   return (
-    <div
-      // style={{
-      //   display: 'flex',
-      //   flexDirection: 'column',
-      //   alignItems: 'center',
-      //   justifyContent: 'center',
-      //   minHeight: '70vh',
-      //   gap: '5rem',
-      // }}
-      className="flex flex-col items-center justify-center gap-14 mb-28"
-    >
-      <Parabola
-        // className={styles.parabola}
-        args={args}
-        ref={ref}
-        pointEl={pointEl}
-      />
+    <div className="flex flex-col items-center justify-center gap-14 mb-28">
+      <Parabola args={args} ref={ref} pointEl={pointEl} />
       <Button variant="outline" onClick={() => setArgs(defaultArgs)}>
         Reset to default
       </Button>
@@ -192,7 +177,17 @@ export const ParabolaPage = () => {
           </label>
         ))}
       </div>
-      <Button variant="outline" onClick={() => copy(ref)}>
+      <Button
+        variant="outline"
+        onClick={() => {
+          try {
+            copy(ref)
+            toast.success('Copied to clipboard!', { position: 'top-center' })
+          } catch {
+            toast.error('Something went wrong', { position: 'top-center' })
+          }
+        }}
+      >
         Copy SVG to clipboard
       </Button>
     </div>
