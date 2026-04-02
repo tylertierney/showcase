@@ -57,7 +57,7 @@ const HomeSection = ({
 
 export const Home = () => {
   return (
-    <div className="container max-w-6xl flex flex-col gap-10 min-h-screen mb-64">
+    <div className="container max-w-6xl flex flex-col gap-10 min-h-screen mb-64 py-16">
       <HomeSection
         title="PARABOLA"
         headline="Building Bridges"

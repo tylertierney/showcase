@@ -54,6 +54,17 @@
   --background-30: color-mix(in hsl, var(--background) 30%, var(--foreground));
   --background-20: color-mix(in hsl, var(--background) 20%, var(--foreground));
   --background-10: color-mix(in hsl, var(--background) 10%, var(--foreground));
+
+  --foreground-90: color-mix(in hsl, var(--foreground) 90%, var(--background));
+  --foreground-95: color-mix(in hsl, var(--foreground) 95%, var(--background));
+  --foreground-80: color-mix(in hsl, var(--foreground) 80%, var(--background));
+  --foreground-70: color-mix(in hsl, var(--foreground) 70%, var(--background));
+  --foreground-60: color-mix(in hsl, var(--foreground) 60%, var(--background));
+  --foreground-50: color-mix(in hsl, var(--foreground) 50%, var(--background));
+  --foreground-40: color-mix(in hsl, var(--foreground) 40%, var(--background));
+  --foreground-30: color-mix(in hsl, var(--foreground) 30%, var(--background));
+  --foreground-20: color-mix(in hsl, var(--foreground) 20%, var(--background));
+  --foreground-10: color-mix(in hsl, var(--foreground) 10%, var(--background));
 }
 
 .dark {

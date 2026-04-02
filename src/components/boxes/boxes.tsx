@@ -143,8 +143,8 @@ const getBoxes = (): Box[] =>
     .map(
       () =>
         new Box({
-          x: ~~(Math.random() * WIDTH - 100) + 20,
-          y: ~~(Math.random() * HEIGHT - 100) + 20,
+          x: ~~(Math.random() * (WIDTH - 100)) + 20,
+          y: ~~(Math.random() * (HEIGHT - 100)) + 20,
           width: 65,
           height: 65,
         }),
@@ -232,8 +232,9 @@ export const Boxes = () => {
               cx={c * 30}
               cy={r * 30}
               r={1}
-              fill="var(--foreground)"
-              opacity={0.2}
+              // fill="var(--foreground)"
+              fill="url(#bg-gradient)"
+              opacity={1}
             />
           )),
       )
@@ -253,14 +254,39 @@ export const Boxes = () => {
           // border: 'solid red 1px',
           // width: '100vw',
           // maxWidth: '1000px',
-          height: '600px',
+          height: 'min(600px, 100vw)',
           touchAction: 'none',
         }}
         className="self-center"
       >
-        {/* <text x={0} y={16} style={{ fontSize: '16px' }}>
+        <text x={0} y={16} style={{ fontSize: '16px' }}>
           0, 0
-        </text> */}
+        </text>
+        {/* <linearGradient
+          id="bg-gradient"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="0%"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="red">
+            <animate
+              attributeName="stop-color"
+              values="red;blue;red"
+              dur="4s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop offset="100%" stopColor="yellow">
+            <animate
+              attributeName="stop-color"
+              values="yellow;green;yellow"
+              dur="4s"
+              repeatCount="indefinite"
+            />
+          </stop>
+        </linearGradient> */}
         <linearGradient
           id="bg-gradient"
           x1="0%"
@@ -269,18 +295,26 @@ export const Boxes = () => {
           y2="0%"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stop-color="red">
+          <stop offset="0%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="red;blue;red"
+              values="var(--foreground);var(--foreground-10);var(--foreground)"
               dur="4s"
               repeatCount="indefinite"
             />
           </stop>
-          <stop offset="100%" stop-color="yellow">
+          <stop offset="50%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="yellow;green;yellow"
+              values="var(--foreground-10);var(--foreground);var(--foreground-10)"
+              dur="4s"
+              repeatCount="indefinite"
+            ></animate>
+          </stop>
+          <stop offset="100%" stopColor="var(--foreground)">
+            <animate
+              attributeName="stop-color"
+              values="var(--foreground);var(--foreground-10);var(--foreground)"
               dur="4s"
               repeatCount="indefinite"
             />
