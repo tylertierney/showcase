@@ -298,7 +298,7 @@ export const Boxes = () => {
           <stop offset="0%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="var(--foreground);var(--foreground-10);var(--foreground)"
+              values="red;transparent;transparent;red"
               dur="4s"
               repeatCount="indefinite"
             />
@@ -306,7 +306,7 @@ export const Boxes = () => {
           <stop offset="50%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="var(--foreground-10);var(--foreground);var(--foreground-10)"
+              values="transparent;red;transparent;transparent"
               dur="4s"
               repeatCount="indefinite"
             ></animate>
@@ -314,7 +314,7 @@ export const Boxes = () => {
           <stop offset="100%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="var(--foreground);var(--foreground-10);var(--foreground)"
+              values="transparent;transparent;red;transparent"
               dur="4s"
               repeatCount="indefinite"
             />
