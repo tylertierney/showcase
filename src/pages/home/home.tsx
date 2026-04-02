@@ -99,10 +99,12 @@ export const Home = () => {
         />
       </HomeSection>
       <HomeSection
-        title="SANDBOX"
-        headline="Create"
-        description={[`I don't really know what goes here.`]}
-        link="/sandbox"
+        title="FLOW"
+        headline="Boxes of stuff"
+        description={[
+          `Playing around with objects inside of an SVG and connecting them via lines like in a flowchart.`,
+        ]}
+        link="/boxes"
       ></HomeSection>
     </div>
   )

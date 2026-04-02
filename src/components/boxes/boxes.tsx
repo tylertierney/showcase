@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/purity */
-
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import {
   type Coords,
@@ -9,6 +7,9 @@ import {
   convertLinesToPath,
   distance,
 } from './utils'
+
+const WIDTH = 500
+const HEIGHT = 500
 
 type CoordsWithOffset = Coords & { offsetX: number; offsetY: number }
 
@@ -144,8 +145,6 @@ const getBoxes = (): Box[] =>
         new Box({
           x: ~~(Math.random() * 380) + 10,
           y: ~~(Math.random() * 380) + 10,
-          // width: ~~(Math.random() * 50) + 30,
-          // height: ~~(Math.random() * 50) + 30,
           width: 65,
           height: 65,
         }),
@@ -159,7 +158,7 @@ type Drag = {
   offsetY: number
 }
 
-export const Sandbox = () => {
+export const Boxes = () => {
   const svgRef = useRef<SVGSVGElement>(null)
   const [drag, setDrag] = useState<Drag | null>(null)
   const [boxes, setBoxes] = useState<Box[]>(getBoxes)
@@ -172,7 +171,7 @@ export const Sandbox = () => {
     return () => window.removeEventListener('pointerup', cb)
   }, [])
 
-  const onMouseDown = (e: MouseEvent, box: Box) => {
+  const onPointerDown = (e: React.PointerEvent, box: Box) => {
     const curr = svgRef.current
     if (!curr) return
 
@@ -189,35 +188,39 @@ export const Sandbox = () => {
     setDrag(res)
   }
 
-  const onMouseMove = (e: MouseEvent) => {
-    if (!drag) return
-    const curr = svgRef.current
-    if (!curr) return
+  useEffect(() => {
+    const cb = (e: PointerEvent) => {
+      if (!drag) return
+      const curr = svgRef.current
+      if (!curr) return
 
-    const { top, left } = curr.getBoundingClientRect()
+      const { top, left } = curr.getBoundingClientRect()
 
-    setBoxes((prev) =>
-      prev.map((b) => {
-        if (b.id === drag.box.id) {
-          return new Box({
-            ...b,
-            x: e.clientX - left - drag.offsetX,
-            y: e.clientY - top - drag.offsetY,
-          })
-        }
-        return b
-      }),
-    )
-  }
+      setBoxes((prev) =>
+        prev.map((b) => {
+          if (b.id === drag.box.id) {
+            return new Box({
+              ...b,
+              x: e.clientX - left - drag.offsetX,
+              y: e.clientY - top - drag.offsetY,
+            })
+          }
+          return b
+        }),
+      )
+    }
+
+    window.addEventListener('pointermove', cb)
+
+    return () => window.removeEventListener('pointermove', cb)
+  }, [drag])
 
   return (
     <div className="flex flex-col gap-12 pt-36">
       <Button onClick={() => setBoxes(getBoxes())}>reset</Button>
       <svg
-        onMouseMove={onMouseMove}
-        onPointerMove={onMouseMove}
         ref={svgRef}
-        viewBox="0 0 500 500"
+        viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         style={{ border: 'solid red 1px', width: '500px', touchAction: 'none' }}
       >
         {boxes.slice(1).map((box, idx) => {
@@ -227,10 +230,13 @@ export const Sandbox = () => {
 
           return (
             <path
+              key={idx}
               d={convertLinesToPath(lines, 5)}
               fill="none"
               strokeWidth={1}
-              stroke="black"
+              stroke="var(--foreground)"
+              strokeLinejoin="round"
+              strokeDasharray={'6'}
             />
           )
         })}
@@ -239,15 +245,15 @@ export const Sandbox = () => {
             <g
               key={key}
               style={{ cursor: drag ? 'grabbing' : 'grab' }}
-              onMouseDown={(e) => onMouseDown(e, box)}
-              onPointerDown={(e) => onMouseDown(e, box)}
+              onPointerDown={(e) => onPointerDown(e, box)}
             >
               <rect
                 x={box.x}
                 y={box.y}
                 width={box.width}
                 height={box.height}
-                fill="lightblue"
+                fill="var(--background)"
+                stroke="var(--foreground)"
                 rx={6}
               ></rect>
             </g>
