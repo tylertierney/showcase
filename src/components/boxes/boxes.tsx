@@ -8,8 +8,8 @@ import {
   distance,
 } from './utils'
 
-const WIDTH = 500
-const HEIGHT = 500
+const WIDTH = 600
+const HEIGHT = 600
 
 type CoordsWithOffset = Coords & { offsetX: number; offsetY: number }
 
@@ -143,8 +143,8 @@ const getBoxes = (): Box[] =>
     .map(
       () =>
         new Box({
-          x: ~~(Math.random() * 380) + 10,
-          y: ~~(Math.random() * 380) + 10,
+          x: ~~(Math.random() * WIDTH - 20) + 20,
+          y: ~~(Math.random() * HEIGHT - 20) + 20,
           width: 65,
           height: 65,
         }),
@@ -175,14 +175,17 @@ export const Boxes = () => {
     const curr = svgRef.current
     if (!curr) return
 
-    const { top, left } = curr.getBoundingClientRect()
+    const { top, left, width, height } = curr.getBoundingClientRect()
+
+    const x = ((e.clientX - left) / width) * WIDTH
+    const y = ((e.clientY - top) / height) * HEIGHT
 
     const res: Drag = {
       box,
-      x: e.clientX - left,
-      y: e.clientY - top,
-      offsetX: e.clientX - left - box.x,
-      offsetY: e.clientY - top - box.y,
+      x,
+      y,
+      offsetX: x - box.x,
+      offsetY: y - box.y,
     }
 
     setDrag(res)
@@ -194,15 +197,15 @@ export const Boxes = () => {
       const curr = svgRef.current
       if (!curr) return
 
-      const { top, left } = curr.getBoundingClientRect()
+      const { top, left, width, height } = curr.getBoundingClientRect()
 
       setBoxes((prev) =>
         prev.map((b) => {
           if (b.id === drag.box.id) {
             return new Box({
               ...b,
-              x: e.clientX - left - drag.offsetX,
-              y: e.clientY - top - drag.offsetY,
+              x: ((e.clientX - left) / width) * WIDTH - drag.offsetX,
+              y: ((e.clientY - top) / height) * HEIGHT - drag.offsetY,
             })
           }
           return b
@@ -215,14 +218,46 @@ export const Boxes = () => {
     return () => window.removeEventListener('pointermove', cb)
   }, [drag])
 
+  const rowCount = ~~(HEIGHT / 30)
+  const colCount = ~~(WIDTH / 30)
+  const dots = () =>
+    Array(rowCount)
+      .fill(null)
+      .map((_, r) =>
+        Array(colCount)
+          .fill(null)
+          .map((_, c) => (
+            <circle
+              key={r * rowCount + c}
+              cx={c * 30}
+              cy={r * 30}
+              r={1}
+              fill="var(--foreground)"
+              opacity={0.2}
+            />
+          )),
+      )
+
   return (
-    <div className="flex flex-col gap-12 pt-36">
-      <Button onClick={() => setBoxes(getBoxes())}>reset</Button>
+    <div className="flex flex-col gap-12 pt-36 container">
+      <Button
+        className="self-center py-4 px-8"
+        onClick={() => setBoxes(getBoxes())}
+      >
+        Reset
+      </Button>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        style={{ border: 'solid red 1px', width: '500px', touchAction: 'none' }}
+        style={{
+          width: '100vw',
+          maxWidth: '1000px',
+          touchAction: 'none',
+        }}
+        preserveAspectRatio="none"
+        className="self-center"
       >
+        {dots()}
         {boxes.slice(1).map((box, idx) => {
           const prev = boxes[idx]
 

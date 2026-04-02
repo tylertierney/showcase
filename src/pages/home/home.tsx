@@ -24,10 +24,10 @@ const HomeSection = ({
 >) => {
   return (
     <div
-      className={`flex flex-col items-stretch justify-between self-stretch lg:flex-row lg:gap-8 lg:items-center ${className}`}
+      className={`flex flex-col items-stretch justify-between self-stretch lg:flex-row lg:gap-10 lg:items-center ${className}`}
       {...rest}
     >
-      <div className="flex flex-col p-8 gap-8 self-center lg:min-w-124">
+      <div className="flex flex-col gap-8 self-center lg:min-w-124">
         <h3
           style={{ letterSpacing: 1.5 }}
           className="font-medium opacity-75 font-mono"

@@ -9,7 +9,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="ui-showcase-theme">
       <nav className="flex self-stretch justify-center border-b py-2 px-6">
-        <div className="flex justify-between max-w-5xl grow">
+        <div className="flex justify-between max-w-6xl grow">
           <Link
             to="/"
             className={`
