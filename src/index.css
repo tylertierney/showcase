@@ -43,6 +43,17 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+
+  --background-95: color-mix(in hsl, var(--background) 95%, var(--foreground));
+  --background-90: color-mix(in hsl, var(--background) 90%, var(--foreground));
+  --background-80: color-mix(in hsl, var(--background) 80%, var(--foreground));
+  --background-70: color-mix(in hsl, var(--background) 70%, var(--foreground));
+  --background-60: color-mix(in hsl, var(--background) 60%, var(--foreground));
+  --background-50: color-mix(in hsl, var(--background) 50%, var(--foreground));
+  --background-40: color-mix(in hsl, var(--background) 40%, var(--foreground));
+  --background-30: color-mix(in hsl, var(--background) 30%, var(--foreground));
+  --background-20: color-mix(in hsl, var(--background) 20%, var(--foreground));
+  --background-10: color-mix(in hsl, var(--background) 10%, var(--foreground));
 }
 
 .dark {

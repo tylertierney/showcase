@@ -143,8 +143,8 @@ const getBoxes = (): Box[] =>
     .map(
       () =>
         new Box({
-          x: ~~(Math.random() * WIDTH - 20) + 20,
-          y: ~~(Math.random() * HEIGHT - 20) + 20,
+          x: ~~(Math.random() * WIDTH - 100) + 20,
+          y: ~~(Math.random() * HEIGHT - 100) + 20,
           width: 65,
           height: 65,
         }),
@@ -250,13 +250,42 @@ export const Boxes = () => {
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         style={{
-          width: '100vw',
-          maxWidth: '1000px',
+          // border: 'solid red 1px',
+          // width: '100vw',
+          // maxWidth: '1000px',
+          height: '600px',
           touchAction: 'none',
         }}
-        preserveAspectRatio="none"
         className="self-center"
       >
+        {/* <text x={0} y={16} style={{ fontSize: '16px' }}>
+          0, 0
+        </text> */}
+        <linearGradient
+          id="bg-gradient"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="0%"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stop-color="red">
+            <animate
+              attributeName="stop-color"
+              values="red;blue;red"
+              dur="4s"
+              repeatCount="indefinite"
+            />
+          </stop>
+          <stop offset="100%" stop-color="yellow">
+            <animate
+              attributeName="stop-color"
+              values="yellow;green;yellow"
+              dur="4s"
+              repeatCount="indefinite"
+            />
+          </stop>
+        </linearGradient>
         {dots()}
         {boxes.slice(1).map((box, idx) => {
           const prev = boxes[idx]
@@ -269,7 +298,8 @@ export const Boxes = () => {
               d={convertLinesToPath(lines, 5)}
               fill="none"
               strokeWidth={1}
-              stroke="var(--foreground)"
+              // stroke="var(--foreground)"
+              stroke="url(#bg-gradient)"
               strokeLinejoin="round"
               strokeDasharray={'6'}
             />
@@ -288,7 +318,8 @@ export const Boxes = () => {
                 width={box.width}
                 height={box.height}
                 fill="var(--background)"
-                stroke="var(--foreground)"
+                // stroke="var(--foreground)"
+                stroke="url(#bg-gradient)"
                 rx={6}
               ></rect>
             </g>
