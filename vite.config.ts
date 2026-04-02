@@ -9,7 +9,6 @@ export default defineConfig({
     port: 3000,
     host: '192.168.254.167',
   },
-  base: '/showcase/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
