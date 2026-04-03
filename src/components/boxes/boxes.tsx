@@ -7,6 +7,7 @@ import {
   convertLinesToPath,
   distance,
 } from './utils'
+import { Showcase } from '../animated-svg/arrow/arrow'
 
 const WIDTH = 600
 const HEIGHT = 600
@@ -221,10 +222,10 @@ export const Boxes = () => {
   const rowCount = ~~(HEIGHT / 30)
   const colCount = ~~(WIDTH / 30)
   const dots = () =>
-    Array(rowCount)
+    Array(rowCount + 1)
       .fill(null)
       .map((_, r) =>
-        Array(colCount)
+        Array(colCount + 1)
           .fill(null)
           .map((_, c) => (
             <circle
@@ -232,7 +233,6 @@ export const Boxes = () => {
               cx={c * 30}
               cy={r * 30}
               r={1}
-              // fill="var(--foreground)"
               fill="url(#bg-gradient)"
               opacity={1}
             />
@@ -247,46 +247,16 @@ export const Boxes = () => {
       >
         Reset
       </Button>
+      <Showcase />
       <svg
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         style={{
-          // border: 'solid red 1px',
-          // width: '100vw',
-          // maxWidth: '1000px',
           height: 'min(600px, 100vw)',
           touchAction: 'none',
         }}
         className="self-center"
       >
-        <text x={0} y={16} style={{ fontSize: '16px' }}>
-          0, 0
-        </text>
-        {/* <linearGradient
-          id="bg-gradient"
-          x1="0%"
-          y1="0%"
-          x2="100%"
-          y2="0%"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop offset="0%" stopColor="red">
-            <animate
-              attributeName="stop-color"
-              values="red;blue;red"
-              dur="4s"
-              repeatCount="indefinite"
-            />
-          </stop>
-          <stop offset="100%" stopColor="yellow">
-            <animate
-              attributeName="stop-color"
-              values="yellow;green;yellow"
-              dur="4s"
-              repeatCount="indefinite"
-            />
-          </stop>
-        </linearGradient> */}
         <linearGradient
           id="bg-gradient"
           x1="0%"
@@ -298,7 +268,7 @@ export const Boxes = () => {
           <stop offset="0%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="red;transparent;transparent;red"
+              values="var(--foreground);var(--foreground-50);var(--foreground-50);var(--foreground)"
               dur="4s"
               repeatCount="indefinite"
             />
@@ -306,7 +276,7 @@ export const Boxes = () => {
           <stop offset="50%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="transparent;red;transparent;transparent"
+              values="var(--foreground-50);var(--foreground);var(--foreground-50);var(--foreground-50)"
               dur="4s"
               repeatCount="indefinite"
             ></animate>
@@ -314,7 +284,7 @@ export const Boxes = () => {
           <stop offset="100%" stopColor="var(--foreground)">
             <animate
               attributeName="stop-color"
-              values="transparent;transparent;red;transparent"
+              values="var(--foreground-50);var(--foreground-50);var(--foreground);var(--foreground-50)"
               dur="4s"
               repeatCount="indefinite"
             />
