@@ -1,10 +1,12 @@
 import { Link, type LinkProps } from 'react-router-dom'
-import bridge from '../../bridge.svg'
+import bridge from '../../svg/bridge.svg'
+import boxes from '../../svg/boxes.svg'
 import { buttonVariants } from '@/components/ui/button'
-import type { ComponentProps, PropsWithChildren, ReactNode } from 'react'
+import type { ComponentProps, PropsWithChildren } from 'react'
 import Porcupine from '../../components/porcupine/porcupine'
 import { MatrixText } from '../../components/matrix/matrix'
 import { FieldSeparator } from '../../components/ui/field'
+import test from '../../svg/test.svg'
 
 const HomeSection = ({
   title,
@@ -27,7 +29,7 @@ const HomeSection = ({
       className={`flex flex-col items-stretch justify-between self-stretch lg:flex-row lg:gap-10 lg:items-center ${className}`}
       {...rest}
     >
-      <div className="flex flex-col gap-8 self-center lg:min-w-124">
+      <div className="flex flex-col gap-8 self-center p-4 lg:min-w-124">
         <h3
           style={{ letterSpacing: 1.5 }}
           className="font-medium opacity-75 font-mono"
@@ -56,6 +58,8 @@ const HomeSection = ({
 }
 
 export const Home = () => {
+  console.log(test)
+  console.log(bridge)
   return (
     <div className="container max-w-6xl flex flex-col gap-10 min-h-screen mb-64 py-16">
       <HomeSection
@@ -80,7 +84,12 @@ export const Home = () => {
         link="/porcupine"
         className="lg:flex-row-reverse"
       >
-        <Porcupine className="min-h-74" style={{ touchAction: 'none' }} />
+        <Porcupine
+          numberOfNodes={150}
+          className="min-h-74"
+          style={{ touchAction: 'none' }}
+          pushStrength={30}
+        />
       </HomeSection>
       <FieldSeparator />
       <HomeSection
@@ -98,14 +107,27 @@ export const Home = () => {
           className="overflow-hidden h-160"
         />
       </HomeSection>
+      <FieldSeparator />
       <HomeSection
         title="FLOW"
         headline="Boxes of stuff"
         description={[
-          `Playing around with objects inside of an SVG and connecting them via lines like in a flowchart.`,
+          `Playing around with objects inside of an SVG and connecting them via lines like a flowchart.`,
         ]}
         link="/boxes"
-      ></HomeSection>
+        className="lg:flex-row-reverse"
+      >
+        <img className="w-full" src={boxes} />
+      </HomeSection>
+      <HomeSection
+        title="VECTORS"
+        headline="Shape & Direction"
+        description={[`Moving shapes in different directions.`]}
+        link="/vectors"
+        className="lg:flex-row-reverse"
+      >
+        {/* <img className="w-full" src={boxes} /> */}
+      </HomeSection>
     </div>
   )
 }

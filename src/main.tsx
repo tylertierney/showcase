@@ -8,6 +8,7 @@ import { ParabolaPage } from './pages/parabola/parabola.tsx'
 import { PorcupinePage } from './pages/porcupine/porcupine.tsx'
 import { MatrixPage } from './pages/matrix/matrix.tsx'
 import { Boxes } from './components/boxes/boxes.tsx'
+import { Vectors } from './pages/vectors/vectors.tsx'
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: 'boxes',
         element: <Boxes />,
+      },
+      {
+        path: 'vectors',
+        element: <Vectors />,
       },
     ],
   },

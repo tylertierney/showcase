@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, type RefObject } from 'react'
 import { Button } from '../ui/button'
 import {
   type Coords,
@@ -8,6 +8,7 @@ import {
   distance,
 } from './utils'
 import { Showcase } from '../animated-svg/arrow/arrow'
+import { toast } from 'sonner'
 
 const WIDTH = 600
 const HEIGHT = 600
@@ -239,16 +240,27 @@ export const Boxes = () => {
           )),
       )
 
+  const copy = (ref: RefObject<SVGSVGElement | null>) => {
+    if (!ref) return
+    const curr = ref.current
+    if (!curr) return
+
+    const html = curr.outerHTML
+
+    navigator.clipboard.writeText(html)
+  }
+
   return (
     <div className="flex flex-col gap-12 pt-36 container">
       <Button
         className="self-center py-4 px-8"
-        onClick={() => setBoxes(getBoxes())}
+        onClick={() => setBoxes([...getBoxes(), ...getBoxes()])}
       >
         Reset
       </Button>
       <Showcase />
       <svg
+        xmlns="http://www.w3.org/2000/svg"
         ref={svgRef}
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         style={{
@@ -330,6 +342,19 @@ export const Boxes = () => {
           )
         })}
       </svg>
+      <Button
+        className="self-center py-4 px-8"
+        onClick={() => {
+          try {
+            copy(svgRef)
+            toast.success('Copied to clipboard!', { position: 'top-center' })
+          } catch {
+            toast.error('Something went wrong', { position: 'top-center' })
+          }
+        }}
+      >
+        Copy SVG to clipboard
+      </Button>
     </div>
   )
 }

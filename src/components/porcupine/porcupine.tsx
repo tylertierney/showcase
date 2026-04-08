@@ -49,6 +49,8 @@ type PorcupineProps = {
   backgroundGradient?: string[]
   animated?: boolean
   hover?: boolean
+  pushStrength?: number
+  radius?: number
 }
 
 const HEIGHT = 600
@@ -79,6 +81,8 @@ export default function Porcupine({
   backgroundGradient = [],
   animated = true,
   hover = true,
+  pushStrength = 40,
+  radius = 120,
   ...rest
 }: PorcupineProps & SVGAttributes<SVGSVGElement>) {
   const initialNodes: Node[] = useMemo(
@@ -155,7 +159,6 @@ export default function Porcupine({
     const dy = finalY - mouseY
 
     const distance = Math.sqrt(dx * dx + dy * dy)
-    const radius = 120
 
     if (distance < radius && distance !== 0) {
       // Normalize direction (unit vector)
@@ -166,7 +169,6 @@ export default function Porcupine({
       const force = (radius - distance) / radius
 
       // Push away from mouse
-      const pushStrength = 40 // tweak this
 
       finalX += nx * force * pushStrength
       finalY += ny * force * pushStrength
@@ -205,11 +207,6 @@ export default function Porcupine({
           className=""
           id="stem-gradient"
           gradientUnits="userSpaceOnUse"
-          // x1={0}
-          // y1={'50%'}
-          // x2={0}
-          // y2={'100%'}
-
           cx={WIDTH / 2}
           cy={HEIGHT / 2}
         >
